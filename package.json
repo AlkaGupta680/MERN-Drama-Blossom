@@ -1,0 +1,37 @@
+{
+  "name": "project_drama_blossom",
+  "version": "1.0.0",
+  "main": "backend/server.js",
+  "scripts": {
+   "dev": "cross-env NODE_ENV=development nodemon backend/server.js",
+  "start": "cross-env NODE_ENV=production node backend/server.js",
+  "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlkaGupta680/Drama-Blossom.git"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlkaGupta680/Drama-Blossom/issues"
+  },
+  "homepage": "https://github.com/AlkaGupta680/Drama-Blossom#readme",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.15.0",
+    "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
