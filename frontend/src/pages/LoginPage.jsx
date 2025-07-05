@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/authUser";
-import { Eye, EyeOff, Heart, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Heart, Mail, Lock, UserCheck } from "lucide-react";
 import FloatingPetals from "../components/FloatingPetals";
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const { login, isLoggingIn } = useAuthStore();
+    const { login, loginAsGuest, isLoggingIn } = useAuthStore();
     
     const handleLogin = (e) => {
         e.preventDefault();
         login({ email, password });
+    };
+
+    const handleGuestLogin = () => {
+        loginAsGuest();
     };
 
     return (
@@ -95,6 +99,25 @@ const LoginPage = () => {
                             )}
                         </button>
                     </form>
+
+                    {/* Guest Login Option */}
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-600"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-2 bg-black/40 text-gray-400">또는 (or)</span>
+                        </div>
+                    </div>
+
+                    <button 
+                        onClick={handleGuestLogin}
+                        disabled={isLoggingIn}
+                        className='w-full py-4 glass-morphism hover:bg-white/20 text-white font-semibold rounded-2xl hover:scale-105 transition-all duration-300 border border-white/30 disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center justify-center gap-3'
+                    >
+                        <UserCheck size={20} />
+                        게스트로 계속하기 (Continue as Guest)
+                    </button>
                     
                     <div className='text-center text-gray-300'>
                         <p className="mb-4">계정이 없으신가요?</p>

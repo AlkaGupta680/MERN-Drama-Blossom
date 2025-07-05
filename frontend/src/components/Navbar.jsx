@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useState } from "react";
-import { LogOut, Search, Menu, Heart } from 'lucide-react';
+import { LogOut, Search, Menu, Heart, User } from 'lucide-react';
 import { useAuthStore } from '../store/authUser';
 import { useContentStore } from '../store/content';
 
 const Navbar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { user, logout } = useAuthStore();
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const { user, logout, isGuest } = useAuthStore();
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
     const { setContentType } = useContentStore();
     
@@ -59,21 +60,77 @@ const Navbar = () => {
                     </div>
                 </Link>
                 
-                <div className="relative group">
-                    <img 
-                        src={user.image} 
-                        alt="Avatar" 
-                        className='h-10 w-10 rounded-full cursor-pointer border-2 border-pink-400 hover:border-pink-300 transition-all duration-300 hover:scale-110 object-cover'
-                    />
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-black"></div>
+                {/* User Menu */}
+                <div className="relative">
+                    <button 
+                        onClick={() => setShowUserMenu(!showUserMenu)}
+                        className="relative group"
+                    >
+                        <img 
+                            src={user.image} 
+                            alt="Avatar" 
+                            className='h-10 w-10 rounded-full cursor-pointer border-2 border-pink-400 hover:border-pink-300 transition-all duration-300 hover:scale-110 object-cover'
+                        />
+                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-black ${
+                            isGuest ? 'bg-blue-400' : 'bg-green-400'
+                        }`}></div>
+                    </button>
+
+                    {/* User Dropdown Menu */}
+                    {showUserMenu && (
+                        <div className="absolute right-0 mt-2 w-64 korean-card rounded-2xl p-4 backdrop-blur-xl border border-white/20 shadow-2xl">
+                            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/20">
+                                <img 
+                                    src={user.image} 
+                                    alt="Avatar" 
+                                    className='h-12 w-12 rounded-full object-cover border-2 border-pink-400'
+                                />
+                                <div>
+                                    <h3 className="font-bold text-white korean-text">{user.username}</h3>
+                                    <p className="text-sm text-gray-400">{user.email}</p>
+                                    <span className={`text-xs px-2 py-1 rounded-full ${
+                                        isGuest 
+                                            ? 'bg-blue-500/20 text-blue-300' 
+                                            : 'bg-green-500/20 text-green-300'
+                                    }`}>
+                                        {isGuest ? '게스트' : '회원'}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                                <Link 
+                                    to="/dashboard" 
+                                    className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/10 transition-all duration-300 text-white hover:text-pink-300"
+                                    onClick={() => setShowUserMenu(false)}
+                                >
+                                    <User size={18} />
+                                    <span>대시보드 (Dashboard)</span>
+                                </Link>
+                                
+                                <Link 
+                                    to="/history" 
+                                    className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/10 transition-all duration-300 text-white hover:text-pink-300"
+                                    onClick={() => setShowUserMenu(false)}
+                                >
+                                    <Search size={18} />
+                                    <span>검색 기록 (History)</span>
+                                </Link>
+                                
+                                <button 
+                                    onClick={() => {
+                                        logout();
+                                        setShowUserMenu(false);
+                                    }}
+                                    className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-red-500/20 transition-all duration-300 text-white hover:text-red-300"
+                                >
+                                    <LogOut size={18} />
+                                    <span>{isGuest ? '게스트 종료' : '로그아웃'} (Logout)</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-                
-                <button 
-                    onClick={logout}
-                    className="p-2 rounded-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transition-all duration-300 hover:scale-110 group"
-                >
-                    <LogOut className='size-5 text-white group-hover:rotate-12 transition-transform duration-300' />
-                </button>
                 
                 <div className='sm:hidden'>
                     <button 
@@ -115,7 +172,22 @@ const Navbar = () => {
                     >
                         🔍 검색 기록 (History)
                     </Link>
+                    <Link 
+                        to={"/dashboard"} 
+                        className='block hover:text-pink-300 p-3 rounded-lg hover:bg-white/10 transition-all duration-300 text-white font-medium' 
+                        onClick={toggleMobileMenu}
+                    >
+                        👤 대시보드 (Dashboard)
+                    </Link>
                 </div>
+            )}
+
+            {/* Click outside to close user menu */}
+            {showUserMenu && (
+                <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setShowUserMenu(false)}
+                ></div>
             )}
         </header>
     );

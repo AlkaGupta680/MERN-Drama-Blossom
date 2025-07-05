@@ -10,11 +10,12 @@ axios.defaults.withCredentials = true;
     isCheckingAuth:true,
     isLoggingOut:false,
     isLoggingIn:false,
+    isGuest:false,
     signup: async (credentials)=>{
         set({isSigningUp:true})
         try {
             const response=await axios.post("/api/v1/auth/signup", credentials);
-            set({user:response.data.user , isSigningUp:false});
+            set({user:response.data.user , isSigningUp:false, isGuest:false});
             toast.success("Account created sucessfully");
         } catch (error) {
             toast.error(error.response.data.message || "signup failed");
@@ -25,18 +26,33 @@ axios.defaults.withCredentials = true;
          set({isLoggingIn : true}) ;
         try {
             const response = await axios.post("/api/v1/auth/login", credentials);
-            set({user:response.data.user,isLoggingIn:false});
+            set({user:response.data.user,isLoggingIn:false, isGuest:false});
              toast.success("Login successfully");
         } catch (error) {
             set({isLoggingIn:false, user:null});
              toast.error(error.response.data.message || "Login failed");
         }
     } ,
+    loginAsGuest: () => {
+        const guestUser = {
+            _id: 'guest',
+            username: 'Guest User',
+            email: 'guest@dramablossom.com',
+            image: '/avatar2.png'
+        };
+        set({user: guestUser, isGuest: true, isLoggingIn: false});
+        toast.success("Welcome as Guest! 🌸");
+    },
     logout: async ()=>{
         set({isLoggingOut : true}) ;
         try {
+            if (useAuthStore.getState().isGuest) {
+                set({user:null, isLoggingOut:false, isGuest:false});
+                toast.success("Guest session ended");
+                return;
+            }
             await axios.post("/api/v1/auth/logout");
-            set({user:null,isLoggingOut:false});
+            set({user:null,isLoggingOut:false, isGuest:false});
              toast.success("Logout successfully");
         } catch (error) {
             set({isLoggingOut:false});
@@ -47,10 +63,10 @@ axios.defaults.withCredentials = true;
         set({isCheckingAuth:true});
         try {
            const response = await axios.get("/api/v1/auth/authCheck") ;
-           set({user:response.data.user , isCheckingAuth:false}) ;
+           set({user:response.data.user , isCheckingAuth:false, isGuest:false}) ;
            
         } catch (error) {
-             set({isCheckingAuth:false,user:null}) ; 
+             set({isCheckingAuth:false,user:null, isGuest:false}) ; 
             //  toast.error(error.response.data.message || "An error occured");
         }
     } ,

@@ -1,15 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, Heart, Star, Play } from "lucide-react";
+import { ChevronRight, Heart, Star, Play, UserCheck } from "lucide-react";
 import FloatingPetals from "../../components/FloatingPetals";
+import { useAuthStore } from "../../store/authUser";
 
 const AuthScreen = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
+    const { loginAsGuest } = useAuthStore();
     
     const handleFormSubmit = (e) => {
         e.preventDefault();
         navigate("/signup?email=" + email);
+    };
+
+    const handleGuestAccess = () => {
+        loginAsGuest();
+        navigate("/");
     };
 
     return (
@@ -22,12 +29,21 @@ const AuthScreen = () => {
                     <img src="/DramaBlossom-logo1.png" alt="Drama Blossom logo" className='w-32 md:w-52 hover:scale-105 transition-transform duration-300'/>
                     <Heart className="text-pink-400 heart-beat hidden md:block" size={24} />
                 </div>
-                <Link 
-                    to={"/login"} 
-                    className='btn-primary text-white py-3 px-6 rounded-full font-medium hover:scale-105 transition-all duration-300 shadow-lg'
-                >
-                    로그인 (Sign In)
-                </Link>
+                <div className="flex gap-4">
+                    <button
+                        onClick={handleGuestAccess}
+                        className='glass-morphism hover:bg-white/20 text-white py-3 px-6 rounded-full font-medium hover:scale-105 transition-all duration-300 border border-white/30 flex items-center gap-2'
+                    >
+                        <UserCheck size={18} />
+                        게스트 (Guest)
+                    </button>
+                    <Link 
+                        to={"/login"} 
+                        className='btn-primary text-white py-3 px-6 rounded-full font-medium hover:scale-105 transition-all duration-300 shadow-lg'
+                    >
+                        로그인 (Sign In)
+                    </Link>
+                </div>
             </header>
 
             {/* Hero section */}
@@ -48,7 +64,7 @@ const AuthScreen = () => {
                 </div>
 
                 <div className="slide-in-right">
-                    <form className='flex flex-col md:flex-row gap-4 w-full max-w-2xl' onSubmit={handleFormSubmit}>
+                    <form className='flex flex-col md:flex-row gap-4 w-full max-w-2xl mb-6' onSubmit={handleFormSubmit}>
                         <div className="relative flex-1">
                             <input 
                                 type='email'
@@ -64,6 +80,18 @@ const AuthScreen = () => {
                             <ChevronRight className='size-6' />
                         </button>
                     </form>
+
+                    {/* Guest Access Button */}
+                    <div className="text-center">
+                        <p className="text-gray-300 mb-4">또는 (or)</p>
+                        <button
+                            onClick={handleGuestAccess}
+                            className='glass-morphism hover:bg-white/20 text-white py-4 px-8 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 border border-white/30 flex items-center justify-center gap-3 mx-auto'
+                        >
+                            <UserCheck size={20} />
+                            게스트로 둘러보기 (Browse as Guest)
+                        </button>
+                    </div>
                 </div>
 
                 {/* Stats */}
