@@ -289,3 +289,56 @@
   font-weight: 600;
   letter-spacing: 0.5px;
 }
+
+/* New animations for the modern cinema experience */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+  }
+  to {
+    box-shadow: 0 0 40px rgba(255, 107, 157, 0.8), 0 0 60px rgba(255, 107, 157, 0.4);
+  }
+}
+
+/* Cinema screen effect */
+.cinema-screen {
+  position: relative;
+  overflow: hidden;
+}
+
+.cinema-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: screenReflection 3s ease-in-out infinite;
+}
+
+@keyframes screenReflection {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
