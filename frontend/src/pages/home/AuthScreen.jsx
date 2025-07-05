@@ -114,41 +114,124 @@ const AuthScreen = () => {
             {/* Separator */}
             <div className='h-2 w-full bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500' aria-hidden='true'/>
 
-            {/* First section */}
+            {/* K-Drama Showcase Section */}
             <div className='py-20 bg-black text-white korean-pattern'>
                 <div className='flex max-w-6xl mx-auto items-center justify-center md:flex-row flex-col px-4 md:px-2 gap-12'>
                     {/* Left side */}
                     <div className='flex-1 text-center md:text-left slide-in-left'>
                         <h2 className='text-4xl md:text-6xl font-extrabold mb-6 korean-text drama-title'>
-                            🏠 집에서 즐기는 극장
+                            🌸 K-드라마의 마법
                         </h2>
                         <h3 className='text-2xl md:text-3xl font-semibold mb-4 text-pink-200'>
-                            Enjoy on your TV
+                            Experience the Magic of K-Drama
                         </h3>
-                        <p className='text-lg md:text-xl text-gray-300 leading-relaxed'>
-                            스마트 TV, PlayStation, Xbox, Chromecast, Apple TV에서 
-                            최고 화질의 한국 드라마를 감상하세요.
+                        <p className='text-lg md:text-xl text-gray-300 leading-relaxed mb-6'>
+                            사랑, 우정, 가족의 이야기부터 스릴러, 판타지까지
+                            다양한 장르의 한국 드라마를 만나보세요.
                         </p>
+                        <div className="space-y-3 text-left">
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                                <span className="text-gray-300">로맨스 (Romance) 💕</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                <span className="text-gray-300">스릴러 (Thriller) 🔥</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                <span className="text-gray-300">판타지 (Fantasy) ✨</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                <span className="text-gray-300">코미디 (Comedy) 😄</span>
+                            </div>
+                        </div>
                         <div className="flex items-center gap-4 mt-6 justify-center md:justify-start">
                             <Star className="text-yellow-400 fill-current" />
                             <span className="text-yellow-400 font-semibold">4.9/5 Rating</span>
                         </div>
                     </div>
                     
-                    {/* Right side */}
+                    {/* Right side - K-Drama Video Showcase */}
                     <div className='flex-1 relative slide-in-right'>
                         <div className="relative hover-lift">
-                            <img src="/tv.png" alt="TV image" className='mt-4 z-20 relative rounded-2xl shadow-2xl'/>
-                            <video
-                                className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-1/2 z-10 rounded-lg'
-                                playsInline
-                                autoPlay={true}
-                                muted
-                                loop                       
-                            >
-                                <source src='/hero-vid.mp4' type='video/mp4'/>
-                            </video>
-                            <div className="absolute -inset-4 bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl opacity-20 blur-xl"></div>
+                            {/* Main video container with Korean drama aesthetic */}
+                            <div className="relative bg-gradient-to-br from-pink-900/30 to-purple-900/30 rounded-3xl p-6 backdrop-blur-sm border border-pink-400/20">
+                                {/* Video player mockup */}
+                                <div className="relative bg-black rounded-2xl overflow-hidden shadow-2xl">
+                                    <video
+                                        className='w-full h-64 md:h-80 object-cover rounded-2xl'
+                                        playsInline
+                                        autoPlay={true}
+                                        muted
+                                        loop                       
+                                    >
+                                        <source src='/hero-vid.mp4' type='video/mp4'/>
+                                    </video>
+                                    
+                                    {/* Video overlay with K-drama info */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                    
+                                    {/* Play button overlay */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="bg-pink-500/90 hover:bg-pink-500 rounded-full p-4 cursor-pointer transition-all duration-300 hover:scale-110 pulse-glow">
+                                            <Play className="text-white fill-white" size={32} />
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Drama info overlay */}
+                                    <div className="absolute bottom-4 left-4 right-4">
+                                        <div className="korean-card rounded-xl p-4 backdrop-blur-xl">
+                                            <h4 className="text-white font-bold korean-text text-lg mb-1">
+                                                사내맞선 (Business Proposal)
+                                            </h4>
+                                            <p className="text-pink-200 text-sm mb-2">
+                                                로맨틱 코미디 • 2022 • ⭐ 9.2
+                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex -space-x-1">
+                                                    <div className="w-6 h-6 bg-pink-400 rounded-full border-2 border-white"></div>
+                                                    <div className="w-6 h-6 bg-purple-400 rounded-full border-2 border-white"></div>
+                                                    <div className="w-6 h-6 bg-blue-400 rounded-full border-2 border-white"></div>
+                                                </div>
+                                                <span className="text-gray-300 text-xs">+2.5M viewers</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Floating elements */}
+                                <div className="absolute -top-4 -right-4 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-3 animate-bounce">
+                                    <Heart className="text-white fill-white" size={20} />
+                                </div>
+                                
+                                <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-3 animate-pulse">
+                                    <Star className="text-white fill-white" size={20} />
+                                </div>
+                            </div>
+                            
+                            {/* Background glow effect */}
+                            <div className="absolute -inset-6 bg-gradient-to-r from-pink-500 to-purple-600 rounded-3xl opacity-20 blur-2xl"></div>
+                        </div>
+                        
+                        {/* Popular dramas showcase */}
+                        <div className="mt-8 grid grid-cols-3 gap-4">
+                            <div className="korean-card rounded-xl p-3 text-center hover-lift">
+                                <div className="text-2xl mb-2">👑</div>
+                                <p className="text-xs text-gray-300">사랑의 불시착</p>
+                                <p className="text-xs text-pink-400">Crash Landing</p>
+                            </div>
+                            <div className="korean-card rounded-xl p-3 text-center hover-lift">
+                                <div className="text-2xl mb-2">🔥</div>
+                                <p className="text-xs text-gray-300">오징어 게임</p>
+                                <p className="text-xs text-pink-400">Squid Game</p>
+                            </div>
+                            <div className="korean-card rounded-xl p-3 text-center hover-lift">
+                                <div className="text-2xl mb-2">💎</div>
+                                <p className="text-xs text-gray-300">킹덤</p>
+                                <p className="text-xs text-pink-400">Kingdom</p>
+                            </div>
                         </div>
                     </div>
                 </div>
