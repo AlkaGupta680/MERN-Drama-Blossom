@@ -1,344 +1,163 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+import { useState } from "react";
+import { useAuthStore } from "../../store/authUser";
+import { useContentStore } from "../../store/content";
+import Navbar from "../../components/Navbar";
+import { Info, Play, ChevronLeft, ChevronRight, Lock } from "lucide-react";
+import useGetTrendingContent from "../../hooks/useGetTrendingContent";
+import { MOVIE_CATEGORIES, TV_CATEGORIES, ORIGINAL_IMG_BASE_URL } from "../../utils/constants";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { useEffect } from "react";
+import MovieSlider from "../../components/MovieSlider";
+import { formatReleaseDate } from "../../utils/dateFunction";
+import FloatingPetals from "../../components/FloatingPetals";
+import toast from "react-hot-toast";
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+const HomeScreen = () => {
+    const { user, isGuest } = useAuthStore();
+    const { contentType } = useContentStore();
+    const { trendingContent } = useGetTrendingContent();
+    const [imgLoading, setImgLoading] = useState(true);
 
-* {
-  font-family: 'Noto Sans KR', sans-serif;
-}
+    const handlePlayClick = (id) => {
+        if (isGuest) {
+            toast.error("로그인이 필요합니다! Please login to watch content", {
+                duration: 4000,
+                style: {
+                    background: 'linear-gradient(135deg, #ff6b9d 0%, #c44569 100%)',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    borderRadius: '12px',
+                    padding: '16px',
+                },
+            });
+            return;
+        }
+        // Navigate to watch page for logged-in users
+        window.location.href = `/watch/${id}`;
+    };
 
-.hero-bg {
-  background: linear-gradient(135deg, rgba(139, 69, 19, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(75, 0, 130, 0.9) 100%), 
-              url("/hero1.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
+    if (!trendingContent) {
+        return (
+            <div className='h-screen text-white relative'>
+                <FloatingPetals />
+                <Navbar />
+                <div className='absolute top-0 left-0 w-full h-full bg-black/70 flex items-center justify-center -z-10 shimmer' />
+            </div>
+        );
+    }
 
-.korean-gradient {
-  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 25%, #f8b500 50%, #ff6b9d 75%, #c44569 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 8s ease infinite;
-}
+    return (
+        <>
+            <div className='relative h-screen text-white'>
+                <FloatingPetals />
+                <Navbar />
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+                {imgLoading && (
+                    <div className='absolute top-0 left-0 w-full h-full bg-black/70 flex items-center justify-center -z-10 shimmer' />
+                )}
 
-.cherry-blossom {
-  background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 25%, #ffd1e8 50%, #ffc2e0 75%, #ffb3d8 100%);
-}
+                <img
+                    src={ORIGINAL_IMG_BASE_URL + trendingContent?.backdrop_path}
+                    alt='Hero img'
+                    className='absolute top-0 left-0 w-full h-full object-cover -z-50'
+                    onLoad={() => {
+                        setImgLoading(false);
+                    }}
+                />
 
-.hanbok-purple {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 25%, #6d28d9 50%, #5b21b6 75%, #4c1d95 100%);
-}
+                <div className='absolute top-0 left-0 w-full h-full bg-black/50 -z-40' aria-hidden='true' />
 
-.korean-red {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 25%, #b91c1c 50%, #991b1b 75%, #7f1d1d 100%);
-}
+                <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center px-8 md:px-16 lg:px-32'>
+                    <div className='bg-gradient-to-r from-black via-black/80 to-transparent absolute top-0 left-0 w-full h-full -z-10' aria-hidden='true' />
 
-.shimmer {
-  animation: shimmer 2s infinite linear;
-  background: linear-gradient(to right, #2c2c2c 4%, #444 25%, #2c2c2c 36%);
-  background-size: 1000px 100%;
-}
+                    <div className='max-w-2xl fade-in-up'>
+                        <h1 className='mt-4 text-6xl font-extrabold text-balance korean-text drama-title'>
+                            {trendingContent?.title || trendingContent?.name}
+                        </h1>
+                        <p className='mt-2 text-lg'>
+                            {formatReleaseDate(trendingContent?.release_date || trendingContent?.first_air_date)} |{" "}
+                            {trendingContent?.adult ? (
+                                <span className='text-red-600'>18+</span>
+                            ) : (
+                                <span className='text-green-600'>PG-13</span>
+                            )}{" "}
+                        </p>
 
-@keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-}
+                        <p className='mt-4 text-lg'>
+                            {trendingContent?.overview.length > 200
+                                ? trendingContent?.overview.slice(0, 200) + "..."
+                                : trendingContent?.overview}
+                        </p>
+                    </div>
 
-.floating-petals {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
+                    <div className='flex mt-8 gap-4'>
+                        <button
+                            className='bg-white hover:bg-white/80 text-black font-bold py-4 px-8 rounded-2xl mr-4 flex items-center hover:scale-105 transition-all duration-300 shadow-xl'
+                            onClick={() => handlePlayClick(trendingContent?.id)}
+                        >
+                            {isGuest ? (
+                                <>
+                                    <Lock className='size-6 mr-2' />
+                                    로그인 필요 (Login Required)
+                                </>
+                            ) : (
+                                <>
+                                    <Play className='size-6 mr-2 fill-black' />
+                                    재생 (Play)
+                                </>
+                            )}
+                        </button>
 
-.petal {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: radial-gradient(circle, #ffc2e0 0%, #ff9ec7 50%, transparent 70%);
-  border-radius: 50% 0 50% 0;
-  animation: fall linear infinite;
-  opacity: 0.7;
-}
+                        <button className='glass-morphism hover:bg-white/20 text-white py-4 px-8 rounded-2xl flex items-center hover:scale-105 transition-all duration-300 border border-white/30'>
+                            <Info className='size-6 mr-2' />
+                            정보 (More Info)
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-@keyframes fall {
-  0% {
-    transform: translateY(-100vh) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
+            <div className='flex flex-col gap-10 bg-black py-10 relative'>
+                <FloatingPetals />
+                
+                {/* Guest Welcome Message */}
+                {isGuest && (
+                    <div className="max-w-6xl mx-auto px-4 mb-8">
+                        <div className="korean-card p-6 rounded-2xl text-center">
+                            <h2 className="text-2xl font-bold korean-text mb-4">🌸 게스트로 둘러보는 중</h2>
+                            <p className="text-gray-300 mb-4">
+                                현재 게스트 모드로 이용 중입니다. 드라마를 시청하려면 로그인해주세요!
+                            </p>
+                            <div className="flex gap-4 justify-center">
+                                <Link 
+                                    to="/login" 
+                                    className="btn-primary px-6 py-3 rounded-2xl font-medium hover:scale-105 transition-all duration-300"
+                                >
+                                    로그인 (Login)
+                                </Link>
+                                <Link 
+                                    to="/signup" 
+                                    className="glass-morphism hover:bg-white/20 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 border border-white/30"
+                                >
+                                    회원가입 (Sign Up)
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-.korean-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
+                {contentType === "movie" ? (
+                    MOVIE_CATEGORIES.map((category) => (
+                        <MovieSlider key={category} category={category} />
+                    ))
+                ) : (
+                    TV_CATEGORIES.map((category) => (
+                        <MovieSlider key={category} category={category} />
+                    ))
+                )}
+            </div>
+        </>
+    );
+};
 
-.drama-card {
-  background: linear-gradient(145deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 30, 30, 0.9) 100%);
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  position: relative;
-  overflow: hidden;
-}
-
-.drama-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, #ff6b9d, #c44569, #f8b500, #ff6b9d);
-  background-size: 400% 400%;
-  animation: gradientShift 3s ease infinite;
-  z-index: -1;
-  margin: -2px;
-  border-radius: inherit;
-}
-
-.hover-lift {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.hover-lift:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(255, 107, 157, 0.3);
-}
-
-.korean-text {
-  font-family: 'Playfair Display', serif;
-  background: linear-gradient(135deg, #ff6b9d 0%, #f8b500 50%, #c44569 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.glow-effect {
-  box-shadow: 0 0 20px rgba(255, 107, 157, 0.5), 0 0 40px rgba(255, 107, 157, 0.3);
-}
-
-.pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes pulseGlow {
-  from {
-    box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
-  }
-  to {
-    box-shadow: 0 0 30px rgba(255, 107, 157, 0.8), 0 0 60px rgba(255, 107, 157, 0.4);
-  }
-}
-
-.error-page--content::before {
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 107, 157, 0.3) 0,
-    rgba(196, 69, 105, 0.2) 45%,
-    rgba(139, 69, 19, 0.1) 55%,
-    transparent 70%
-  );
-  bottom: -10vw;
-  content: "";
-  left: 10vw;
-  position: absolute;
-  right: 10vw;
-  top: -10vw;
-  z-index: -1;
-}
-
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
-  border-radius: 6px;
-  border: 2px solid #1a1a1a;
-}
-
-::-webkit-scrollbar-track {
-  background: #1a1a1a;
-  border-radius: 6px;
-}
-
-.search-glow {
-  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.3);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
-  border: none;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s;
-}
-
-.btn-primary:hover::before {
-  left: 100%;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
-}
-
-.korean-pattern {
-  background-image: 
-    radial-gradient(circle at 25% 25%, rgba(255, 107, 157, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, rgba(196, 69, 105, 0.1) 0%, transparent 50%);
-  background-size: 100px 100px;
-}
-
-.slide-in-left {
-  animation: slideInLeft 0.8s ease-out;
-}
-
-.slide-in-right {
-  animation: slideInRight 0.8s ease-out;
-}
-
-.fade-in-up {
-  animation: fadeInUp 1s ease-out;
-}
-
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.heart-beat {
-  animation: heartBeat 1.5s ease-in-out infinite;
-}
-
-@keyframes heartBeat {
-  0% { transform: scale(1); }
-  14% { transform: scale(1.1); }
-  28% { transform: scale(1); }
-  42% { transform: scale(1.1); }
-  70% { transform: scale(1); }
-}
-
-.text-shadow-korean {
-  text-shadow: 2px 2px 4px rgba(255, 107, 157, 0.3);
-}
-
-.glass-morphism {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.drama-title {
-  font-family: 'Playfair Display', serif;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-/* New animations for the modern cinema experience */
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.animate-glow {
-  animation: glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-  from {
-    box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
-  }
-  to {
-    box-shadow: 0 0 40px rgba(255, 107, 157, 0.8), 0 0 60px rgba(255, 107, 157, 0.4);
-  }
-}
-
-/* Cinema screen effect */
-.cinema-screen {
-  position: relative;
-  overflow: hidden;
-}
-
-.cinema-screen::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  animation: screenReflection 3s ease-in-out infinite;
-}
-
-@keyframes screenReflection {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
+export default HomeScreen;
