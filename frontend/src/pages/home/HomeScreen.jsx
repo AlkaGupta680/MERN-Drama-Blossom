@@ -1,16 +1,18 @@
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
-import { Play, Info, Star, Calendar, Heart } from "lucide-react";
+import { Play, Info, Star, Calendar, Heart, Lock } from "lucide-react";
 import useGetTrendingContent from "../../hooks/useGetTrendingContent";
 import { MOVIE_CATEGORIES, ORIGINAL_IMG_BASE_URL, TV_CATEGORIES } from "../../utils/constants";
 import { useState } from "react";
 import { useContentStore } from "../../store/content";
 import MovieSlider from "../../components/MovieSlider";
 import FloatingPetals from "../../components/FloatingPetals";
+import { useAuthStore } from "../../store/authUser";
 
 const HomeScreen = () => {
     const { trendingContent } = useGetTrendingContent();
     const { contentType } = useContentStore();
+    const { isGuest } = useAuthStore();
     const [imgLoading, setImgLoading] = useState(true);
 
     if (!trendingContent)
@@ -94,21 +96,41 @@ const HomeScreen = () => {
 
                         {/* Action buttons */}
                         <div className='flex flex-col sm:flex-row gap-4'>
-                            <Link 
-                                to={`/watch/${trendingContent?.id}`}
-                                className='btn-primary font-bold py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-lg hover:scale-105 transition-all duration-300 shadow-xl'
-                            >
-                                <Play className='size-6 fill-white' />
-                                <span>지금 시청하기</span>
-                            </Link>
+                            {isGuest ? (
+                                <Link 
+                                    to="/login"
+                                    className='btn-primary font-bold py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-lg hover:scale-105 transition-all duration-300 shadow-xl'
+                                >
+                                    <Lock className='size-6' />
+                                    <span>로그인하여 시청하기</span>
+                                </Link>
+                            ) : (
+                                <Link 
+                                    to={`/watch/${trendingContent?.id}`}
+                                    className='btn-primary font-bold py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-lg hover:scale-105 transition-all duration-300 shadow-xl'
+                                >
+                                    <Play className='size-6 fill-white' />
+                                    <span>지금 시청하기</span>
+                                </Link>
+                            )}
                             
-                            <Link 
-                                to={`/watch/${trendingContent?.id}`}
-                                className='glass-morphism hover:bg-white/20 text-white py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-300 hover:scale-105 border border-white/30'
-                            >
-                                <Info className='size-6' />
-                                <span>자세히 보기</span>
-                            </Link>
+                            {isGuest ? (
+                                <Link 
+                                    to="/login"
+                                    className='glass-morphism hover:bg-white/20 text-white py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-300 hover:scale-105 border border-white/30'
+                                >
+                                    <Info className='size-6' />
+                                    <span>로그인하여 자세히 보기</span>
+                                </Link>
+                            ) : (
+                                <Link 
+                                    to={`/watch/${trendingContent?.id}`}
+                                    className='glass-morphism hover:bg-white/20 text-white py-4 px-8 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-300 hover:scale-105 border border-white/30'
+                                >
+                                    <Info className='size-6' />
+                                    <span>자세히 보기</span>
+                                </Link>
+                            )}
                             
                             <button className='glass-morphism hover:bg-white/20 text-white py-4 px-6 rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-105 border border-white/30 group'>
                                 <Heart className='size-6 text-pink-400 group-hover:fill-current transition-all duration-300' />
