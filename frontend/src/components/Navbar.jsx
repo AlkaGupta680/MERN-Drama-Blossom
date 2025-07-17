@@ -1,195 +1,359 @@
-import { Link } from 'react-router-dom';
-import { useState } from "react";
-import { LogOut, Search, Menu, Heart, User } from 'lucide-react';
-import { useAuthStore } from '../store/authUser';
-import { useContentStore } from '../store/content';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-const Navbar = () => {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [showUserMenu, setShowUserMenu] = useState(false);
-    const { user, logout, isGuest } = useAuthStore();
-    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-    const { setContentType } = useContentStore();
-    
-    return (
-        <header className='max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 h-20 relative z-50'>
-            <div className='flex items-center gap-10 z-50'>
-                <Link to="/" className="group">
-                    <div className="flex items-center gap-2">
-                        <img 
-                            src="/DramaBlossom-logo1.png" 
-                            alt="DramaBlossom logo" 
-                            className='w-32 sm:w-40 transition-transform duration-300 group-hover:scale-105' 
-                        />
-                        <Heart className="text-pink-400 heart-beat hidden sm:block" size={20} />
-                    </div>
-                </Link>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
-                {/* Desktop navbar items */}
-                <div className='hidden sm:flex gap-6 items-center'>
-                    <Link 
-                        to="/" 
-                        className='relative px-3 py-2 text-white hover:text-red-400 transition-all duration-300 group text-sm font-medium'
-                        onClick={() => setContentType("movie")}
-                    >
-                        Movies
-                    </Link>
-                    <Link 
-                        to="/" 
-                        className='relative px-3 py-2 text-white hover:text-red-400 transition-all duration-300 group text-sm font-medium'
-                        onClick={() => setContentType("tv")}
-                    >
-                        TV Shows
-                    </Link>
-                    {!isGuest && (
-                        <Link 
-                            to="/history" 
-                            className='relative px-3 py-2 text-white hover:text-red-400 transition-all duration-300 group text-sm font-medium'
-                        >
-                            My List
-                        </Link>
-                    )}
-                </div>
-            </div>
+* {
+  font-family: 'Noto Sans KR', sans-serif;
+}
 
-            <div className='flex gap-4 items-center z-50'>
-                <Link to={"/search"} className="group">
-                    <div className="p-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all duration-300 group-hover:scale-110">
-                        <Search className='size-5 text-white' />
-                    </div>
-                </Link>
-                
-                {/* User Menu */}
-                <div className="relative">
-                    <button 
-                        onClick={() => setShowUserMenu(!showUserMenu)}
-                        className="relative group"
-                    >
-                        <img 
-                            src={user.image} 
-                            alt="Avatar" 
-                            className='h-10 w-10 rounded-full cursor-pointer border-2 border-pink-400 hover:border-pink-300 transition-all duration-300 hover:scale-110 object-cover'
-                        />
-                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-black ${
-                            isGuest ? 'bg-blue-400' : 'bg-green-400'
-                        }`}></div>
-                    </button>
+.hero-bg {
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(75, 0, 130, 0.9) 100%), 
+              url("/hero1.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
 
-                    {/* User Dropdown Menu */}
-                    {showUserMenu && (
-                        <div className="absolute right-0 mt-2 w-64 korean-card rounded-2xl p-4 backdrop-blur-xl border border-white/20 shadow-2xl">
-                            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/20">
-                                <img 
-                                    src={user.image} 
-                                    alt="Avatar" 
-                                    className='h-12 w-12 rounded-full object-cover border-2 border-pink-400'
-                                />
-                                <div>
-                                    <h3 className="font-bold text-white korean-text">{user.username}</h3>
-                                    <p className="text-sm text-gray-400">{user.email}</p>
-                                    <span className={`text-xs px-2 py-1 rounded-full ${
-                                        isGuest 
-                                            ? 'bg-blue-500/20 text-blue-300' 
-                                            : 'bg-green-500/20 text-green-300'
-                                    }`}>
-                                        {isGuest ? '게스트' : '회원'}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Link 
-                                    to="/dashboard" 
-                                    className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/10 transition-all duration-300 text-white hover:text-pink-300"
-                                    onClick={() => setShowUserMenu(false)}
-                                >
-                                    <User size={18} />
-                                    <span>대시보드 (Dashboard)</span>
-                                </Link>
-                                
-                                <Link 
-                                    to="/history" 
-                                    className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/10 transition-all duration-300 text-white hover:text-pink-300"
-                                    onClick={() => setShowUserMenu(false)}
-                                >
-                                    <Search size={18} />
-                                    <span>검색 기록 (History)</span>
-                                </Link>
-                                
-                                <button 
-                                    onClick={() => {
-                                        logout();
-                                        setShowUserMenu(false);
-                                    }}
-                                    className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-red-500/20 transition-all duration-300 text-white hover:text-red-300"
-                                >
-                                    <LogOut size={18} />
-                                    <span>{isGuest ? '게스트 종료' : '로그아웃'} (Logout)</span>
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-                
-                <div className='sm:hidden'>
-                    <button 
-                        onClick={toggleMobileMenu}
-                        className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 transition-all duration-300"
-                    >
-                        <Menu className='size-5 text-white' />
-                    </button>
-                </div>
-            </div>
+.korean-gradient {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 25%, #f8b500 50%, #ff6b9d 75%, #c44569 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
 
-            {/* Mobile navbar items */}
-            {isMobileMenuOpen && (
-                <div className='w-full sm:hidden mt-4 z-50 korean-card rounded-xl p-4 backdrop-blur-xl'>
-                    <Link 
-                        to={"/"} 
-                        className='block hover:text-pink-300 p-3 rounded-lg hover:bg-white/10 transition-all duration-300 text-white font-medium' 
-                        onClick={() => {
-                            toggleMobileMenu();
-                            setContentType("movie");
-                        }}
-                    >
-                        🎬 영화 (Movies)
-                    </Link>
-                    <Link 
-                        to={"/"} 
-                        className='block hover:text-pink-300 p-3 rounded-lg hover:bg-white/10 transition-all duration-300 text-white font-medium' 
-                        onClick={() => {
-                            toggleMobileMenu();
-                            setContentType("tv");
-                        }}
-                    >
-                        📺 드라마 (TV Shows)
-                    </Link>
-                    <Link 
-                        to={"/history"} 
-                        className='block hover:text-pink-300 p-3 rounded-lg hover:bg-white/10 transition-all duration-300 text-white font-medium' 
-                        onClick={toggleMobileMenu}
-                    >
-                        🔍 검색 기록 (History)
-                    </Link>
-                    <Link 
-                        to={"/dashboard"} 
-                        className='block hover:text-pink-300 p-3 rounded-lg hover:bg-white/10 transition-all duration-300 text-white font-medium' 
-                        onClick={toggleMobileMenu}
-                    >
-                        👤 대시보드 (Dashboard)
-                    </Link>
-                </div>
-            )}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-            {/* Click outside to close user menu */}
-            {showUserMenu && (
-                <div 
-                    className="fixed inset-0 z-40" 
-                    onClick={() => setShowUserMenu(false)}
-                ></div>
-            )}
-        </header>
-    );
-};
+.cherry-blossom {
+  background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 25%, #ffd1e8 50%, #ffc2e0 75%, #ffb3d8 100%);
+}
 
-export default Navbar;
+.hanbok-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 25%, #6d28d9 50%, #5b21b6 75%, #4c1d95 100%);
+}
+
+.korean-red {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 25%, #b91c1c 50%, #991b1b 75%, #7f1d1d 100%);
+}
+
+.shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #2c2c2c 4%, #444 25%, #2c2c2c 36%);
+  background-size: 1000px 100%;
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.floating-petals {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.petal {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #ffc2e0 0%, #ff9ec7 50%, transparent 70%);
+  border-radius: 50% 0 50% 0;
+  animation: fall linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.korean-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.drama-card {
+  background: linear-gradient(145deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 30, 30, 0.9) 100%);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.drama-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #ff6b9d, #c44569, #f8b500, #ff6b9d);
+  background-size: 400% 400%;
+  animation: gradientShift 3s ease infinite;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+}
+
+.hover-lift {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(255, 107, 157, 0.3);
+}
+
+.korean-text {
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #ff6b9d 0%, #f8b500 50%, #c44569 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-effect {
+  box-shadow: 0 0 20px rgba(255, 107, 157, 0.5), 0 0 40px rgba(255, 107, 157, 0.3);
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from {
+    box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(255, 107, 157, 0.8), 0 0 60px rgba(255, 107, 157, 0.4);
+  }
+}
+
+.error-page--content::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 107, 157, 0.3) 0,
+    rgba(196, 69, 105, 0.2) 45%,
+    rgba(139, 69, 19, 0.1) 55%,
+    transparent 70%
+  );
+  bottom: -10vw;
+  content: "";
+  left: 10vw;
+  position: absolute;
+  right: 10vw;
+  top: -10vw;
+  z-index: -1;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+  border-radius: 6px;
+  border: 2px solid #1a1a1a;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 6px;
+}
+
+.search-glow {
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.3);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 107, 157, 0.4);
+}
+
+.korean-pattern {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 107, 157, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(196, 69, 105, 0.1) 0%, transparent 50%);
+  background-size: 100px 100px;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.8s ease-out;
+}
+
+.fade-in-up {
+  animation: fadeInUp 1s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.heart-beat {
+  animation: heartBeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.1); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  70% { transform: scale(1); }
+}
+
+.text-shadow-korean {
+  text-shadow: 2px 2px 4px rgba(255, 107, 157, 0.3);
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.drama-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* New animations for the modern cinema experience */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+  }
+  to {
+    box-shadow: 0 0 40px rgba(255, 107, 157, 0.8), 0 0 60px rgba(255, 107, 157, 0.4);
+  }
+}
+
+/* Cinema screen effect */
+.cinema-screen {
+  position: relative;
+  overflow: hidden;
+}
+
+.cinema-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: screenReflection 3s ease-in-out infinite;
+}
+
+@keyframes screenReflection {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
